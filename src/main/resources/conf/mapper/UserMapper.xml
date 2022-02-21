@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.githubob.spider.dao.UserDao">
+    <insert id="addUser" parameterType="io.github.githubob.base.pojo.User">
+        insert into github_user
+        (
+            user_id,
+            user_login_name,
+            user_name,
+            user_avatar_url,
+            user_company,
+            user_blog,
+            user_location,
+            user_email,
+            user_bio,
+            create_time
+        )
+        values (
+                #{userId},
+                #{userLoginName},
+                #{userName},
+                #{userAvatarUrl},
+                #{userCompany},
+                #{userBlog},
+                #{userLocation},
+                #{userEmail},
+                #{userBio},
+                now()
+               )
+    </insert>
+    <select id="queryUser" parameterType="io.github.githubob.base.query.UserQuery" resultType="io.github.githubob.base.pojo.User">
+        select *
+        from github_user
+        <where>
+            1=1
+            <if test="userLoginName">and user_login_name=#{userLoginName}</if>
+            <if test="userName">and user_name=#{userName}</if>
+        </where>
+    </select>
+</mapper>

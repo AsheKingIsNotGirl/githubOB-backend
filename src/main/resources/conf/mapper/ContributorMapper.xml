@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.github.githubob.spider.dao.ContributorDao">
+    <insert id="addContributor" parameterType="io.github.githubob.base.pojo.Contributor">
+        insert into github_contributor(repo_id,contributor_id,create_time)
+        values (#{repoId},#{contributorId},now())
+    </insert>
+    <delete id="deleteContributor" parameterType="io.github.githubob.base.query.ContributorQuery">
+        delete
+        from github_contributor
+        where repo_id=#{repoId}
+    </delete>
+</mapper>
