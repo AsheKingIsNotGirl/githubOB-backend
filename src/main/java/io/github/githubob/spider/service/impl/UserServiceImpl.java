@@ -2,18 +2,22 @@ package io.github.githubob.spider.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.github.githubob.base.config.RedisHelper;
 import io.github.githubob.base.constants.RedisKey;
 import io.github.githubob.base.pojo.User;
 import io.github.githubob.base.query.UserQuery;
 import io.github.githubob.spider.api.GithubAPI;
 import io.github.githubob.spider.dao.UserDao;
 import io.github.githubob.spider.entity.Param;
+import io.github.githubob.spider.entity.UserInfo;
 import io.github.githubob.spider.service.AbstrastSpiderService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -26,13 +30,14 @@ public class UserServiceImpl extends AbstrastSpiderService {
 
     @Override
     public void saveData(Param param) throws JsonProcessingException {
+        Jedis jedisTemplate = RedisHelper.getRedisConnection();
         UserQuery query=UserQuery.builder().userLoginName(param.getUser()).build();
         List<User> userList = userDao.queryUser(query);
         if (userList.size()>0){
             logger.warn("{}用户信息数据库已存在",param.getUser());
             return;
         }
-        String url=GithubAPI.getUserInfoUrl(param.getUser());
+        String url= param.getUrl();
         logger.info("请求地址：{}",url);
         ResponseEntity<String> body = restTemplate.getForEntity(url, String.class);
         if (body.getStatusCode().isError()){
@@ -42,7 +47,7 @@ public class UserServiceImpl extends AbstrastSpiderService {
         logger.debug("请求内容为：{}",body.getBody());
         ObjectNode userNode = new ObjectMapper().readValue(body.getBody(), ObjectNode.class);
         //将请求仓库url加入队列中
-        jedisTemplate.lpush(RedisKey.WAIT_GET_REPOS_QUERE,userNode.get("repos_url").asText());
+        jedisTemplate.lpush(RedisKey.WAIT_USER_REPOS_QUERE,userNode.get("repos_url").asText());
         //装载数据
         User user=new User();
         user.setUserId(userNode.get("id").asLong());
@@ -54,5 +59,6 @@ public class UserServiceImpl extends AbstrastSpiderService {
         user.setUserLocation(userNode.get("location").asText());
         user.setUserEmail(userNode.get("email").asText());
         userDao.addUser(user);
+        jedisTemplate.close();
     }
 }

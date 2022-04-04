@@ -14,6 +14,6 @@ public class UserServiceTest {
     private AbstrastSpiderService userService;
     @Test
     public void addRepo() throws JsonProcessingException {
-        userService.saveData(Param.builder().user("Snailclimb").build());
+        userService.saveData(Param.builder().user("Snailclimb").url("https://api.github.com/users/Snailclimb").build());
     }
 }

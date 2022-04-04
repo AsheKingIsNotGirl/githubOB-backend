@@ -21,4 +21,6 @@ public class Repo {
     private String repoLanguages;
     private String etag;
     private Date createTime;
+    private String contributorsUrl;
+    private String ownerLogin;
 }

@@ -10,8 +10,6 @@ import redis.clients.jedis.Jedis;
 import javax.annotation.Resource;
 
 public abstract class AbstrastSpiderService {
-    @Resource
-    protected Jedis jedisTemplate;
     protected RestTemplate restTemplate;
 
     public AbstrastSpiderService() {

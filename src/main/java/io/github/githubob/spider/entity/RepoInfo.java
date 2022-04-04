@@ -1,11 +1,9 @@
 package io.github.githubob.spider.entity;
 
-import lombok.Builder;
 import lombok.Data;
 
-@Builder
 @Data
-public class Param {
+public class RepoInfo {
     private String user;
     private String repo;
     private String url;
